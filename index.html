@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Family Gallery 📸</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #fff9f0;
+    min-height: 100vh;
+    color: #2d2d2d;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #ff6b9d, #ff9a3c, #ffd93d, #6bcb77, #4d96ff);
+    background-size: 300% 300%;
+    animation: gradientShift 8s ease infinite;
+    padding: 40px 24px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .hero::before {
+    content: '❤️ 📸 🌟 💛 🌈 ✨ 🎉';
+    position: absolute;
+    top: 10px; left: 0; right: 0;
+    font-size: 22px;
+    letter-spacing: 12px;
+    opacity: 0.35;
+  }
+
+  .hero h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 52px;
+    color: white;
+    text-shadow: 3px 3px 0 rgba(0,0,0,0.15);
+    margin-bottom: 8px;
+  }
+
+  .hero p { color: rgba(255,255,255,0.92); font-size: 17px; font-weight: 600; }
+
+  .setup-badge {
+    display: inline-block;
+    margin-top: 18px;
+    background: rgba(255,255,255,0.25);
+    border: 2px dashed rgba(255,255,255,0.7);
+    border-radius: 50px;
+    padding: 8px 22px;
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .setup-badge:hover { background: rgba(255,255,255,0.4); }
+
+  .tabs-wrapper {
+    background: white;
+    border-bottom: 3px solid #f0e6ff;
+    padding: 0 20px;
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+  }
+  .tabs-wrapper::-webkit-scrollbar { display: none; }
+
+  .tab {
+    padding: 16px 20px 13px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 15px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: #888;
+    border-bottom: 4px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tab:hover { color: #555; }
+  .tab.active { color: #ff6b9d; border-bottom-color: #ff6b9d; }
+  .tab .emoji { font-size: 18px; }
+
+  .section-header {
+    padding: 28px 24px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 26px;
+    color: #2d2d2d;
+  }
+  .section-count {
+    background: #ff6b9d;
+    color: white;
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    padding: 8px 24px 40px;
+  }
+
+  .photo-card {
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s;
+    background: white;
+    position: relative;
+  }
+  .photo-card:hover {
+    transform: translateY(-5px) rotate(1deg);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+  }
+
+  .photo-img-wrap {
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    position: relative;
+  }
+  .photo-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s;
+  }
+  .photo-card:hover .photo-img-wrap img { transform: scale(1.08); }
+
+  .photo-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    gap: 8px;
+  }
+
+  .photo-label {
+    padding: 10px 12px 12px;
+    font-weight: 700;
+    font-size: 13px;
+    color: #444;
+    text-align: center;
+  }
+
+  .color-ribbon {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+  }
+
+  .event-chip {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: rgba(0,0,0,0.55);
+    color: white;
+    border-radius: 12px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .setup-panel {
+    margin: 20px 24px 0;
+    background: linear-gradient(135deg, #fff0f7, #f0f7ff);
+    border: 2px dashed #ff9cc8;
+    border-radius: 20px;
+    padding: 24px;
+  }
+  .setup-panel h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 22px;
+    color: #cc4488;
+    margin-bottom: 6px;
+  }
+  .setup-panel p { color: #666; font-size: 14px; line-height: 1.6; margin-bottom: 18px; }
+
+  .steps { display: flex; flex-direction: column; gap: 12px; }
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: white;
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .step-num {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 16px;
+    color: white;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-body strong { display: block; font-size: 14px; color: #333; margin-bottom: 3px; }
+  .step-body span { font-size: 13px; color: #777; line-height: 1.5; }
+  .step-body code {
+    background: #f5f0ff;
+    color: #7733cc;
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-size: 12px;
+    font-family: monospace;
+  }
+
+  .people-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+    padding: 8px 24px 40px;
+  }
+  .person-card {
+    background: white;
+    border-radius: 20px;
+    padding: 20px 16px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+  .person-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  }
+  .person-avatar {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    margin: 0 auto 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+    border: 4px solid white;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+  }
+  .person-name { font-family: 'Fredoka One', cursive; font-size: 16px; color: #333; margin-bottom: 4px; }
+  .person-count { font-size: 12px; color: #aaa; font-weight: 600; }
+
+  .events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    padding: 8px 24px 40px;
+  }
+  .event-card {
+    border-radius: 18px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  .event-card:hover { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(0,0,0,0.18); }
+  .event-banner {
+    height: 110px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 48px;
+  }
+  .event-info { background: white; padding: 12px 14px 14px; }
+  .event-name { font-family: 'Fredoka One', cursive; font-size: 16px; color: #333; margin-bottom: 3px; }
+  .event-meta { font-size: 12px; color: #aaa; font-weight: 600; }
+
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox-inner {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    max-width: 90vw;
+    max-height: 90vh;
+    position: relative;
+  }
+  .lightbox-inner img {
+    max-width: 80vw;
+    max-height: 70vh;
+    object-fit: contain;
+    display: block;
+  }
+  .lightbox-close {
+    position: absolute;
+    top: 12px; right: 14px;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 34px; height: 34px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lightbox-caption {
+    padding: 14px 16px;
+    font-weight: 700;
+    font-size: 15px;
+    text-align: center;
+    color: #333;
+  }
+
+  .hidden { display: none !important; }
+  .loading { text-align: center; padding: 40px; color: #aaa; font-weight: 700; font-size: 16px; }
+
+  .config-note {
+    background: #fffbea;
+    border: 2px solid #ffd93d;
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin: 12px 24px 0;
+    font-size: 13px;
+    color: #7a6000;
+    font-weight: 600;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: monospace;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type="text"]:focus { border-color: #ff6b9d; }
+
+  .save-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #ff6b9d, #ff9a3c);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 17px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: opacity 0.2s;
+  }
+  .save-btn:hover { opacity: 0.9; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>📸 Our Family Gallery</h1>
+  <p>Where every moment lives forever 💛</p>
+  <div class="setup-badge" onclick="showTab('setup')">⚙️ Connect Google Drive</div>
+</div>
+
+<div id="config-note" class="config-note">
+  ⚠️ <span>Google Drive is not connected yet. Photos below are <strong>placeholders</strong>. Go to the <strong>Setup</strong> tab to connect your real family photos!</span>
+</div>
+
+<div class="tabs-wrapper">
+  <button class="tab active" onclick="showTab('all')" id="tab-all"><span class="emoji">🏠</span> All Photos</button>
+  <button class="tab" onclick="showTab('people')" id="tab-people"><span class="emoji">👨‍👩‍👧‍👦</span> People</button>
+  <button class="tab" onclick="showTab('events')" id="tab-events"><span class="emoji">🎉</span> Events</button>
+  <button class="tab" onclick="showTab('setup')" id="tab-setup"><span class="emoji">⚙️</span> Setup</button>
+</div>
+
+<!-- ALL PHOTOS TAB -->
+<div id="pane-all">
+  <div class="section-header">
+    <span class="section-title" id="section-title">All Memories</span>
+    <span class="section-count" id="photo-count">0 photos</span>
+  </div>
+  <div class="gallery-grid" id="gallery-grid">
+    <div class="loading">Loading your photos... 📷</div>
+  </div>
+</div>
+
+<!-- PEOPLE TAB -->
+<div id="pane-people" class="hidden">
+  <div class="section-header">
+    <span class="section-title">Our Family</span>
+  </div>
+  <div class="people-grid" id="people-grid"></div>
+</div>
+
+<!-- EVENTS TAB -->
+<div id="pane-events" class="hidden">
+  <div class="section-header">
+    <span class="section-title">Special Moments</span>
+  </div>
+  <div class="events-grid" id="events-grid"></div>
+</div>
+
+<!-- SETUP TAB -->
+<div id="pane-setup" class="hidden">
+  <div class="setup-panel">
+    <h2>🔌 Connect Google Drive</h2>
+    <p>Follow these steps once to load your real family photos automatically.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num" style="background:#ff6b9d;">1</div>
+        <div class="step-body">
+          <strong>Create a Google Cloud Project</strong>
+          <span>Go to <code>console.cloud.google.com</code> → New Project → Enable the <code>Google Drive API</code>.</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:#ff9a3c;">2</div>
+        <div class="step-body">
+          <strong>Create an API Key</strong>
+          <span>APIs & Services → Credentials → Create API Key. Restrict it to <code>Drive API</code> only for safety.</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:#ffd93d;">3</div>
+        <div class="step-body">
+          <strong>Organise Google Drive folders</strong>
+          <span>Create a main folder with sub-folders: <code>Wife</code>, <code>Daughter</code>, <code>Mother</code>, <code>Father</code>, <code>Me</code>. Upload photos inside them.</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:#6bcb77;">4</div>
+        <div class="step-body">
+          <strong>Share the main folder publicly</strong>
+          <span>Right-click folder → Share → Anyone with the link → Viewer. This lets the API read it.</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:#4d96ff;">5</div>
+        <div class="step-body">
+          <strong>Paste your API Key & Folder ID below</strong>
+          <span>The Folder ID is the long string in the Drive URL after <code>/folders/</code>.</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px; display:flex; flex-direction:column; gap:12px;">
+      <div>
+        <label style="font-size:13px; font-weight:700; color:#555; display:block; margin-bottom:6px;">Google Drive API Key</label>
+        <input type="text" id="api-key-input" placeholder="AIzaSy...">
+      </div>
+      <div>
+        <label style="font-size:13px; font-weight:700; color:#555; display:block; margin-bottom:6px;">Family Root Folder ID</label>
+        <input type="text" id="folder-id-input" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs...">
+      </div>
+      <button class="save-btn" onclick="saveAndLoad()">✨ Save & Load My Photos</button>
+    </div>
+  </div>
+  <div style="height:40px;"></div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <div class="lightbox-inner">
+    <button class="lightbox-close" onclick="closeLightbox()">×</button>
+    <img id="lightbox-img" src="" alt="">
+    <div class="lightbox-caption" id="lightbox-caption"></div>
+  </div>
+</div>
+
+<script>
+const PEOPLE = [
+  { name: 'Wife',     emoji: '👩', color: '#ff6b9d', bg: '#fff0f7', count: 0 },
+  { name: 'Daughter', emoji: '👧', color: '#ff9a3c', bg: '#fff6ee', count: 0 },
+  { name: 'Mother',   emoji: '👵', color: '#6bcb77', bg: '#f0faf2', count: 0 },
+  { name: 'Father',   emoji: '👴', color: '#4d96ff', bg: '#f0f6ff', count: 0 },
+  { name: 'Me',       emoji: '🤳', color: '#a96fff', bg: '#f7f0ff', count: 0 },
+];
+
+const EVENTS = [
+  { name: 'Birthdays', emoji: '🎂', bg: '#fff0f7' },
+  { name: 'Festivals', emoji: '🎉', bg: '#fffbe0' },
+  { name: 'Holidays',  emoji: '🏖️', bg: '#f0f6ff' },
+  { name: 'Weddings',  emoji: '💍', bg: '#f7f0ff' },
+  { name: 'Outings',   emoji: '🌳', bg: '#f0faf2' },
+  { name: 'School',    emoji: '🎓', bg: '#fff6ee' },
+];
+
+let allPhotos = [];
+let apiKey = localStorage.getItem('gdrive_api_key') || '';
+let rootFolderId = localStorage.getItem('gdrive_folder_id') || '';
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (apiKey) document.getElementById('api-key-input').value = apiKey;
+  if (rootFolderId) document.getElementById('folder-id-input').value = rootFolderId;
+
+  if (apiKey && rootFolderId) {
+    document.getElementById('config-note').style.display = 'none';
+    loadFromDrive();
+  } else {
+    buildPlaceholderPhotos();
+  }
+});
+
+function showTab(name) {
+  ['all','people','events','setup'].forEach(t => {
+    document.getElementById('pane-' + t).classList.toggle('hidden', t !== name);
+    document.getElementById('tab-' + t).classList.toggle('active', t === name);
+  });
+  if (name === 'all') {
+    document.getElementById('section-title').textContent = 'All Memories';
+    renderGallery(allPhotos);
+    document.getElementById('photo-count').textContent = allPhotos.length + ' photos';
+  }
+}
+
+function buildPeopleGrid() {
+  document.getElementById('people-grid').innerHTML = PEOPLE.map(p => `
+    <div class="person-card" onclick="filterByPerson('${p.name}')" style="border-top:5px solid ${p.color};">
+      <div class="person-avatar" style="background:${p.bg};">${p.emoji}</div>
+      <div class="person-name">${p.name}</div>
+      <div class="person-count">${p.count} photos</div>
+    </div>`).join('');
+}
+
+function buildEventsGrid() {
+  document.getElementById('events-grid').innerHTML = EVENTS.map(e => `
+    <div class="event-card" onclick="filterByEvent('${e.name}')">
+      <div class="event-banner" style="background:${e.bg};">${e.emoji}</div>
+      <div class="event-info">
+        <div class="event-name">${e.name}</div>
+        <div class="event-meta">Tap to browse</div>
+      </div>
+    </div>`).join('');
+}
+
+function buildPlaceholderPhotos() {
+  const placeholders = [
+    { name:'Wife',     emoji:'👩', event:'Holidays',  bg:'#fff0f7', ribbon:'#ff6b9d' },
+    { name:'Daughter', emoji:'👧', event:'Birthdays', bg:'#fff6ee', ribbon:'#ff9a3c' },
+    { name:'Mother',   emoji:'👵', event:'Festivals', bg:'#f0faf2', ribbon:'#6bcb77' },
+    { name:'Father',   emoji:'👴', event:'Outings',   bg:'#f0f6ff', ribbon:'#4d96ff' },
+    { name:'Me',       emoji:'🤳', event:'Weddings',  bg:'#f7f0ff', ribbon:'#a96fff' },
+    { name:'Wife',     emoji:'👩', event:'Weddings',  bg:'#fff0f7', ribbon:'#ff6b9d' },
+    { name:'Daughter', emoji:'👧', event:'School',    bg:'#fff6ee', ribbon:'#ff9a3c' },
+    { name:'Mother',   emoji:'👵', event:'Birthdays', bg:'#f0faf2', ribbon:'#6bcb77' },
+    { name:'Father',   emoji:'👴', event:'Festivals', bg:'#f0f6ff', ribbon:'#4d96ff' },
+    { name:'Me',       emoji:'🤳', event:'Holidays',  bg:'#f7f0ff', ribbon:'#a96fff' },
+    { name:'Wife',     emoji:'👩', event:'Outings',   bg:'#fff0f7', ribbon:'#ff6b9d' },
+    { name:'Daughter', emoji:'👧', event:'Outings',   bg:'#fff6ee', ribbon:'#ff9a3c' },
+  ];
+
+  allPhotos = placeholders.map((p, i) => ({ id: i, ...p, placeholder: true,
+    label: `${p.name} — ${p.event}` }));
+
+  PEOPLE.forEach(p => { p.count = allPhotos.filter(ph => ph.name === p.name).length; });
+  renderGallery(allPhotos);
+  buildPeopleGrid();
+  buildEventsGrid();
+  document.getElementById('photo-count').textContent = allPhotos.length + ' photos';
+}
+
+function renderGallery(photos) {
+  const grid = document.getElementById('gallery-grid');
+  if (!photos.length) { grid.innerHTML = '<div class="loading">No photos found 😔</div>'; return; }
+  grid.innerHTML = photos.map(p => `
+    <div class="photo-card" onclick="openLightbox(${p.id})">
+      <div class="color-ribbon" style="background:${p.ribbon};"></div>
+      <div class="photo-img-wrap">
+        ${p.placeholder
+          ? `<div class="photo-placeholder" style="background:${p.bg};">${p.emoji}<span style="font-size:11px;color:#aaa;font-weight:700;font-family:'Nunito',sans-serif;">Demo photo</span></div>`
+          : `<img src="${p.thumb}" alt="${p.label}" loading="lazy">`
+        }
+        <div class="event-chip">${p.event}</div>
+      </div>
+      <div class="photo-label">${p.label}</div>
+    </div>`).join('');
+}
+
+function filterByPerson(name) {
+  showTab('all');
+  const filtered = allPhotos.filter(p => p.name === name);
+  renderGallery(filtered);
+  document.getElementById('photo-count').textContent = filtered.length + ' photos';
+  document.getElementById('section-title').textContent = name + "'s Photos";
+}
+
+function filterByEvent(event) {
+  showTab('all');
+  const filtered = allPhotos.filter(p => p.event === event);
+  renderGallery(filtered);
+  document.getElementById('photo-count').textContent = filtered.length + ' photos';
+  document.getElementById('section-title').textContent = event;
+}
+
+function openLightbox(id) {
+  const photo = allPhotos.find(p => p.id === id);
+  if (!photo) return;
+  const img = document.getElementById('lightbox-img');
+  if (photo.placeholder) {
+    img.src = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='300'><rect fill='${encodeURIComponent(photo.bg)}' width='400' height='300'/><text x='200' y='140' font-size='80' text-anchor='middle'>${photo.emoji}</text><text x='200' y='200' font-size='18' fill='%23888' text-anchor='middle' font-family='sans-serif'>Demo Placeholder</text></svg>`;
+  } else {
+    img.src = photo.url;
+  }
+  document.getElementById('lightbox-caption').textContent = photo.label;
+  document.getElementById('lightbox').classList.add('open');
+}
+
+function closeLightbox(e) {
+  if (!e || e.target.id === 'lightbox' || e.currentTarget.className === 'lightbox-close')
+    document.getElementById('lightbox').classList.remove('open');
+}
+
+async function saveAndLoad() {
+  apiKey = document.getElementById('api-key-input').value.trim();
+  rootFolderId = document.getElementById('folder-id-input').value.trim();
+  if (!apiKey || !rootFolderId) { alert('Please enter both your API Key and Folder ID!'); return; }
+  localStorage.setItem('gdrive_api_key', apiKey);
+  localStorage.setItem('gdrive_folder_id', rootFolderId);
+  document.getElementById('config-note').style.display = 'none';
+  showTab('all');
+  document.getElementById('gallery-grid').innerHTML = '<div class="loading">🔄 Fetching your family photos...</div>';
+  await loadFromDrive();
+}
+
+async function loadFromDrive() {
+  try {
+    const subFolders = await fetchFolder(rootFolderId);
+    allPhotos = [];
+    let id = 0;
+    for (const folder of subFolders.filter(f => f.mimeType === 'application/vnd.google-apps.folder')) {
+      const person = PEOPLE.find(p => folder.name.toLowerCase().includes(p.name.toLowerCase()));
+      const personName = person ? person.name : folder.name;
+      const ribbon = person ? person.color : '#999';
+      const items = await fetchFolder(folder.id);
+      for (const item of items) {
+        if (item.mimeType && item.mimeType.startsWith('image/')) {
+          allPhotos.push({
+            id: id++,
+            label: `${personName} — ${item.name}`,
+            name: personName,
+            event: guessEvent(item.name),
+            thumb: `https://drive.google.com/thumbnail?id=${item.id}&sz=w400`,
+            url:   `https://drive.google.com/thumbnail?id=${item.id}&sz=w1200`,
+            ribbon, bg: person ? person.bg : '#f5f5f5',
+            placeholder: false,
+          });
+        }
+      }
+    }
+    PEOPLE.forEach(p => { p.count = allPhotos.filter(ph => ph.name === p.name).length; });
+    renderGallery(allPhotos);
+    buildPeopleGrid();
+    buildEventsGrid();
+    document.getElementById('photo-count').textContent = allPhotos.length + ' photos';
+  } catch(err) {
+    document.getElementById('gallery-grid').innerHTML = '<div class="loading">❌ Could not load. Check your API Key and Folder ID.</div>';
+    console.error(err);
+  }
+}
+
+async function fetchFolder(folderId) {
+  const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+trashed=false&key=${apiKey}&fields=files(id,name,mimeType)&pageSize=200`;
+  const res = await fetch(url);
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return data.files || [];
+}
+
+function guessEvent(filename) {
+  const f = filename.toLowerCase();
+  if (f.includes('birthday') || f.includes('bday')) return 'Birthdays';
+  if (f.includes('holiday') || f.includes('trip') || f.includes('travel') || f.includes('beach')) return 'Holidays';
+  if (f.includes('festival') || f.includes('diwali') || f.includes('holi') || f.includes('eid') || f.includes('puja')) return 'Festivals';
+  if (f.includes('wedding') || f.includes('shaadi')) return 'Weddings';
+  if (f.includes('school') || f.includes('college') || f.includes('grad')) return 'School';
+  return 'Outings';
+}
+</script>
+</body>
+</html>
